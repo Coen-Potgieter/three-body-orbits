@@ -12,11 +12,11 @@
 
 <p style="display: flex; align-items:center">
     <img src="assets/demo/figure8-orbit.gif" width="400" alt="Demo">
-    <img src="Assets/demo/broukeA7.gif" width="400" alt="Demo">
+    <img src="assets/demo/broukeA7.gif" width="400" alt="Demo">
 </p>
 
 <p align="center">
-    <img src="Assets/demo/broukeA3.gif" width="700" alt="Demo">
+    <img src="assets/demo/broukeA3.gif" width="700" alt="Demo">
 </p>
 
 ## How It Works ⚙️
