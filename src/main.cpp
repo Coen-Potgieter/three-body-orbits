@@ -11,19 +11,20 @@ int main()
     // For smooth edges on shapes
     sf::ContextSettings settings;
     settings.antiAliasingLevel = 8;
-
     sf::RenderWindow window(sf::VideoMode({WINDOW_WIDTH, WINDOW_HEIGHT}), "My Window", sf::Style::Default, sf::State::Windowed, settings);
 
     // Fixes visual tearing casued by out of sync window with screen
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
 
+    // ------------------------ Various Orbits ---------------------- //
     /* std::unordered_map<std::string, std::any> inpMap = lagrangeOrbit(); */
     /* std::unordered_map<std::string, std::any> inpMap = eulerOrbit(); */
     /* std::unordered_map<std::string, std::any> inpMap = figure8Orbit(); */
     /* std::unordered_map<std::string, std::any> inpMap = BroukeA3(); */
     std::unordered_map<std::string, std::any> inpMap = BroukeA7();
 
+    // Setting up simulation with given initial conditions
     SolarSystem solarSystem = SolarSystem(
         std::any_cast<std::vector<sf::Vector2f>&>(inpMap["vel"]), 
         std::any_cast<std::vector<float>&>(inpMap["mass"]), 
@@ -63,14 +64,10 @@ int main()
 
         // Update physics with fixed time step
         while (accumulator >= dt) {
-            solarSystem.update(); // A new method just for physics
+            solarSystem.update(); 
             accumulator -= dt;
         }
 
-
-
-
-        /* sf::Vector2i mousePos = sf::Mouse::getPosition(window); */
         window.clear();
         bg.draw(window);
 

@@ -1,7 +1,6 @@
-
-
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+
 #include <stdint.h>
 #include <SFML/Graphics.hpp>
 

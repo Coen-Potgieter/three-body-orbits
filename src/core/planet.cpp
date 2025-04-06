@@ -1,8 +1,4 @@
-
-
 #include "../include/planet.h"
-
-
 
 Planet::Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpMass, float inpRadius, sf::Color inpCol, sf::Color inpTrailCol, size_t inpTrailLength) {
 
@@ -19,8 +15,6 @@ Planet::Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpM
     colour = inpCol;
     trailCol = inpTrailCol;
 
-    /* body.setFillColor(colour); */
-    /* body.setFillColor(sf::Color::Black); */
     body.setFillColor(sf::Color::White);
 
     trailHistory = std::vector<sf::Vector2f>();
@@ -29,13 +23,10 @@ Planet::Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpM
 
 
 void Planet::move(sf::Vector2f correction) {
-
-
     v += a;
     body.move(v + correction);
 
     trailHistory.push_back(body.getPosition());
-
     if (trailHistory.size() > trailLength) {
         trailHistory.erase(trailHistory.begin()); // Remove the oldest point
     }
@@ -55,9 +46,6 @@ void Planet::draw(sf::RenderWindow& target, sf::Shader& shader) const{
     // Convert the center position to screen coordinates for the shader
     sf::Vector2u windowSize = target.getSize();
     sf::Vector2f screenPos = static_cast<sf::Vector2f>(target.mapCoordsToPixel(worldPos));
-
-    // Adjust for SFML's shader coordinate system (y-axis might be flipped)
-    // OpenGL and SFML have different Y-axis origins
     screenPos.y = windowSize.y - screenPos.y;
 
     // Set the shader uniforms

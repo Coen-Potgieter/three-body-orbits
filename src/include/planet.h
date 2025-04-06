@@ -1,8 +1,5 @@
-
-
 #ifndef PLANET_H
 #define PLANET_H
-
 
 #include <SFML/Graphics.hpp>
 #include "constants.h"
@@ -24,8 +21,6 @@ public:
 
     Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpMass, float inpRadius, sf::Color inpCol, sf::Color inpTrailCol, size_t inpTrailLength);
     ~Planet() = default;
-
-
 
     void move(sf::Vector2f correction);
     void draw(sf::RenderWindow& target, sf::Shader& shader) const;

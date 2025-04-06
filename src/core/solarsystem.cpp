@@ -2,21 +2,19 @@
 #include "../include/solarsystem.h"
 SolarSystem::SolarSystem(std::vector<sf::Vector2f> initialVelocity, std::vector<float> mass, std::vector<sf::Vector2f> initialPos, std::vector<float> inpRadius, std::vector<sf::Color> inpCols, std::vector<sf::Color> inpTrailCols, size_t inpTrailLength, float inpG) {
 
-
     if (initialVelocity.size() != mass.size() || initialVelocity.size() != initialPos.size()) {
-        throw std::invalid_argument("IDK");
+        throw std::invalid_argument("Mismatch in sizes: 'initialVelocity', 'masses', and 'initialPos' must all have the same length.");
     }
-
-
-    int numPlanets = initialVelocity.size();
 
     G = inpG;
     trailLength = inpTrailLength;
 
+    int numPlanets = initialVelocity.size();
     for (size_t i = 0; i < numPlanets; i++) {
         planets.push_back(Planet(initialVelocity[i], initialPos[i], mass[i], inpRadius[i], inpCols[i], inpTrailCols[i], trailLength));
     }
 
+    // Load Shader
     if (!glowShader.loadFromFile("../src/assets/shaders/glow.frag", sf::Shader::Type::Fragment)) {
         std::cout << "Failed to Load Shader" << std::endl;
     }
@@ -34,18 +32,18 @@ sf::Color blendColors(const sf::Color& a, const sf::Color& b, float t) {
 }
 
 void SolarSystem::draw(sf::RenderWindow& target) {
-
-    // Loop through every planet to correct and draw
     for (auto& planet : planets) {
-        // Draw the planet
         planet.draw(target, glowShader);
     }
 }
 
 void SolarSystem::update() {
     int numPlanets = planets.size();
+
+    // If we have single Planet The don't move hime
     if (numPlanets <= 1) return;
 
+    // For Camera Correction
     sf::Vector2f avgPos = { 0.f, 0.f };
 
     // First calculate all accelerations
@@ -58,18 +56,18 @@ void SolarSystem::update() {
         for (size_t j = 0; j < numPlanets; j++) {
             if (i == j) continue;
 
+            // Math
             sf::Vector2f r = planets[j].body.getPosition() - planets[i].body.getPosition();
             float distSq = r.x * r.x + r.y * r.y;
             float dist = std::sqrt(distSq);
 
-            // Force calculation with proper softening
+            // Force calculation with softening
             float forceMag = G * planets[i].mass * planets[j].mass / (distSq + EPSILON * EPSILON);
             planets[i].a += (r / dist) * (forceMag / planets[i].mass);
-
         }
     }
 
-    // calculate camera correction 
+    // Calculate camera correction 
     avgPos /= static_cast<float>(numPlanets);
     sf::Vector2f correction = sf::Vector2f(WINDOW_WIDTH/2.0, WINDOW_HEIGHT/2.0) - avgPos;
 
@@ -127,5 +125,4 @@ void SolarSystem::handleCollisions() {
             }
         }
     }
-
 }
