@@ -19,10 +19,10 @@ int main()
     window.setFramerateLimit(60);
 
     /* std::unordered_map<std::string, std::any> inpMap = lagrangeOrbit(); */
-    std::unordered_map<std::string, std::any> inpMap = eulerOrbit();
+    /* std::unordered_map<std::string, std::any> inpMap = eulerOrbit(); */
     /* std::unordered_map<std::string, std::any> inpMap = figure8Orbit(); */
     /* std::unordered_map<std::string, std::any> inpMap = BroukeA3(); */
-    /* std::unordered_map<std::string, std::any> inpMap = BroukeA7(); */
+    std::unordered_map<std::string, std::any> inpMap = BroukeA7();
 
     SolarSystem solarSystem = SolarSystem(
         std::any_cast<std::vector<sf::Vector2f>&>(inpMap["vel"]), 
