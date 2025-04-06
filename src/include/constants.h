@@ -8,26 +8,36 @@
 // Window Config
 constexpr uint16_t WINDOW_WIDTH = 1300;
 constexpr uint16_t WINDOW_HEIGHT = 800;
-
-
-
+constexpr float dt = 0.01f;
 
 constexpr sf::Color STAR_COLOUR = sf::Color(255, 255, 255);
-/* constexpr sf::Color P1_COL = sf::Color(255, 0, 0); */
-/* constexpr sf::Color P2_COL = sf::Color(255, 255, 0); */
-/* constexpr sf::Color P3_COL = sf::Color(0, 255, 0); */
 
-constexpr sf::Color P1_COL = sf::Color(255, 140, 0); // Orange
-constexpr sf::Color P2_COL = sf::Color(0, 191, 255); // Deep Sky Blue
-/* constexpr sf::Color P3_COL = sf::Color(186, 85, 211); // Purple */
-constexpr sf::Color P3_COL = sf::Color(0, 255, 128); // Green
+constexpr sf::Color TEAL = sf::Color(20, 255, 236); 
+constexpr sf::Color BLUE = sf::Color(80, 160, 255); 
+constexpr sf::Color YELLOW = sf::Color(255, 223, 0); 
+constexpr sf::Color GREEN = sf::Color(0, 255, 128); 
+constexpr sf::Color ORANGE = sf::Color(255, 140, 0); 
+constexpr sf::Color SKY_BLUE = sf::Color(0, 191, 255); 
+constexpr sf::Color PURPLE = sf::Color(176, 38, 255); 
+constexpr sf::Color RED = sf::Color( 255, 87, 51); 
 
-constexpr size_t TRAIL_LENGTH = 300;
+constexpr sf::Color GREEN_TRAIL = sf::Color(144, 238, 144); 
+constexpr sf::Color ORANGE_TRAIL = sf::Color(255, 200, 100); 
+constexpr sf::Color SKY_BLUE_TRAIL = sf::Color(173, 216, 230); 
+constexpr sf::Color BLUE_TRAIL = sf::Color(80, 160, 255); 
+constexpr sf::Color YELLOW_TRAIL = sf::Color(255, 223, 0); 
+constexpr sf::Color PURPLE_TRAIL = sf::Color(196,147,255); 
+
+
+constexpr sf::Color P1_COL = GREEN;
+constexpr sf::Color P2_COL = ORANGE;
+constexpr sf::Color P3_COL = BLUE;
+
+constexpr size_t TRAIL_LENGTH = 1100;
 constexpr float TRAIL_SIZE = 2.f;
-constexpr sf::Color TRAIL_COL1 = sf::Color(255, 200, 100); // Orange
-constexpr sf::Color TRAIL_COL2 = sf::Color(173, 216, 230); // Sky Blue
-/* constexpr sf::Color TRAIL_COL3 = sf::Color(230, 200, 250); // Purple */
-constexpr sf::Color TRAIL_COL3 = sf::Color(144, 238, 144); // Green
+constexpr sf::Color TRAIL_COL1 = GREEN_TRAIL;
+constexpr sf::Color TRAIL_COL2 = ORANGE_TRAIL;
+constexpr sf::Color TRAIL_COL3 = BLUE_TRAIL;
 
 constexpr float PI = 3.14159265389793;
 constexpr float EPSILON = 0;

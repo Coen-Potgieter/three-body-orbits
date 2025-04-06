@@ -1,6 +1,6 @@
 
 #include "../include/solarsystem.h"
-SolarSystem::SolarSystem(std::vector<sf::Vector2f> initialVelocity, std::vector<float> mass, std::vector<sf::Vector2f> initialPos, std::vector<float> inpRadius, std::vector<sf::Color> inpCols, std::vector<sf::Color> inpTrailCols, float inpG) {
+SolarSystem::SolarSystem(std::vector<sf::Vector2f> initialVelocity, std::vector<float> mass, std::vector<sf::Vector2f> initialPos, std::vector<float> inpRadius, std::vector<sf::Color> inpCols, std::vector<sf::Color> inpTrailCols, size_t inpTrailLength, float inpG) {
 
 
     if (initialVelocity.size() != mass.size() || initialVelocity.size() != initialPos.size()) {
@@ -11,9 +11,10 @@ SolarSystem::SolarSystem(std::vector<sf::Vector2f> initialVelocity, std::vector<
     int numPlanets = initialVelocity.size();
 
     G = inpG;
+    trailLength = inpTrailLength;
 
     for (size_t i = 0; i < numPlanets; i++) {
-        planets.push_back(Planet(initialVelocity[i], initialPos[i], mass[i], inpRadius[i], inpCols[i], inpTrailCols[i]));
+        planets.push_back(Planet(initialVelocity[i], initialPos[i], mass[i], inpRadius[i], inpCols[i], inpTrailCols[i], trailLength));
     }
 
     if (!glowShader.loadFromFile("../src/assets/shaders/glow.frag", sf::Shader::Type::Fragment)) {
@@ -34,57 +35,89 @@ sf::Color blendColors(const sf::Color& a, const sf::Color& b, float t) {
 
 void SolarSystem::draw(sf::RenderWindow& target) {
 
-    int numPlanets = planets.size();
-
-    // If We have 1 planet then don't move him
-    if (numPlanets <= 1) {
-        planets[0].draw(target, glowShader);
-        return;
+    // Loop through every planet to correct and draw
+    for (auto& planet : planets) {
+        // Draw the planet
+        planet.draw(target, glowShader);
     }
+}
 
-    // Track average position of planets for camera correction
+void SolarSystem::update() {
+    int numPlanets = planets.size();
+    if (numPlanets <= 1) return;
+
     sf::Vector2f avgPos = { 0.f, 0.f };
 
-    // Loop through every planet
-    for (size_t currPlanet = 0; currPlanet < numPlanets; currPlanet++) {
+    // First calculate all accelerations
+    for (size_t i = 0; i < numPlanets; i++) {
+        planets[i].a = {0.f, 0.f}; // Reset acceleration
+        
+        // Add to average position
+        avgPos += planets[i].body.getPosition();
 
-        planets[currPlanet].a = { 0.f, 0.f };
+        for (size_t j = 0; j < numPlanets; j++) {
+            if (i == j) continue;
+
+            sf::Vector2f r = planets[j].body.getPosition() - planets[i].body.getPosition();
+            float distSq = r.x * r.x + r.y * r.y;
+            float dist = std::sqrt(distSq);
+
+            // Force calculation with proper softening
+            float forceMag = G * planets[i].mass * planets[j].mass / (distSq + EPSILON * EPSILON);
+            planets[i].a += (r / dist) * (forceMag / planets[i].mass);
+
+        }
+    }
+
+    // calculate camera correction 
+    avgPos /= static_cast<float>(numPlanets);
+    sf::Vector2f correction = sf::Vector2f(WINDOW_WIDTH/2.0, WINDOW_HEIGHT/2.0) - avgPos;
+
+    // Then update positions and velocities
+    for (auto& planet : planets) {
+        planet.move(correction); 
+    }
+
+    // Handle collisions in a separate pass
+    handleCollisions();
+}
+
+void SolarSystem::handleCollisions() {
+
+    // Loop through every planet
+    for (size_t i = 0; i < planets.size(); i++) {
 
         // Get current planet position
-        sf::Vector2f currentPos = planets[currPlanet].body.getPosition();
-
-        // Add to average position
-        avgPos += currentPos;
+        sf::Vector2f currentPos = planets[i].body.getPosition();
 
         // Get the current planet's mass
-        float currMass = planets[currPlanet].mass;
+        float currMass = planets[i].mass;
 
         // Loop through every other planet
-        for (size_t otherPlanet = 0; otherPlanet < numPlanets; otherPlanet++) {
+        for (size_t j = 0; j < planets.size(); j++) {
 
             // If we loop through planet in outer loop then continue
-            if (currPlanet == otherPlanet) continue;
-
+            if (i == j) continue;
 
             // Get position and mass of other planet
-            sf::Vector2f otherPos = planets[otherPlanet].body.getPosition();
-            float otherMass = planets[otherPlanet].mass;
+            sf::Vector2f otherPos = planets[j].body.getPosition();
+            float otherMass = planets[j].mass;
 
             // Do math
             sf::Vector2f direction = otherPos - currentPos;
             float distance = std::sqrt(direction.x*direction.x + direction.y*direction.y);
 
             // If distance is too small then merge the planets
-            if (distance <= planets[currPlanet].radius + planets[otherPlanet].radius) {
+            if (distance <= planets[i].radius + planets[j].radius) {
                 // New planet
-                sf::Vector2f newV = (currMass*planets[currPlanet].v + otherMass*planets[otherPlanet].v) / (currMass + otherMass);
-                sf::Color newCol = blendColors(planets[currPlanet].colour, planets[otherPlanet].colour, 0.5);
-                sf::Color newTrailCol = blendColors(planets[currPlanet].trailCol, planets[otherPlanet].trailCol, 0.5);
-                planets.push_back(Planet(newV, currentPos, currMass + otherMass, planets[currPlanet].radius + planets[otherPlanet].radius, newCol, newTrailCol));
+                sf::Vector2f newV = (currMass*planets[i].v + otherMass*planets[j].v) / (currMass + otherMass);
+                sf::Color newCol = blendColors(planets[i].colour, planets[j].colour, 0.5);
+                sf::Color newTrailCol = blendColors(planets[i].trailCol, planets[j].trailCol, 0.5);
+                planets.push_back(Planet(newV, currentPos, currMass + otherMass, planets[i].radius + planets[j].radius, newCol, newTrailCol, trailLength));
 
                 // Remove merging planets from vector (Remove last index then first index)
-                size_t removal1 = std::max(currPlanet, otherPlanet);
-                size_t removal2 = std::min(currPlanet, otherPlanet);
+                size_t removal1 = std::max(i, j);
+                size_t removal2 = std::min(i, j);
 
                 planets.erase(planets.begin() + removal1);
                 planets.erase(planets.begin() + removal2);
@@ -92,32 +125,7 @@ void SolarSystem::draw(sf::RenderWindow& target) {
                 // This may a bad idea (simply move to next frame in the simulation)
                 return;
             }
-
-            // Get Force
-            float forceMag = (G*otherMass*currMass) / (distance*distance + EPSILON*EPSILON);
-            sf::Vector2f force = (direction*forceMag) / distance;
-
-            // Add it to acceleration
-            planets[currPlanet].a += force / currMass;
         }
-
-        // Move the planet
-        planets[currPlanet].move();
-
     }
 
-    // calculate camera correction 
-    avgPos /= static_cast<float>(numPlanets);
-    sf::Vector2f correction = sf::Vector2f(WINDOW_WIDTH/2.0, WINDOW_HEIGHT/2.0) - avgPos;
-
-    // Loop through every planet to correct and draw
-    for (size_t currPlanet = 0; currPlanet < numPlanets; currPlanet++) {
-        planets[currPlanet].body.move(correction);
-
-        // Draw the planet
-        planets[currPlanet].draw(target, glowShader);
-
-    }
 }
-
-

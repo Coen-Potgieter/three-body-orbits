@@ -4,7 +4,7 @@
 
 
 
-Planet::Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpMass, float inpRadius, sf::Color inpCol, sf::Color inpTrailCol) {
+Planet::Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpMass, float inpRadius, sf::Color inpCol, sf::Color inpTrailCol, size_t inpTrailLength) {
 
     radius = inpRadius;
 
@@ -19,20 +19,26 @@ Planet::Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpM
     colour = inpCol;
     trailCol = inpTrailCol;
 
+    /* body.setFillColor(colour); */
+    /* body.setFillColor(sf::Color::Black); */
+    body.setFillColor(sf::Color::White);
+
     trailHistory = std::vector<sf::Vector2f>();
+    trailLength = inpTrailLength;
 }
 
 
-void Planet::move() {
+void Planet::move(sf::Vector2f correction) {
+
+
+    v += a;
+    body.move(v + correction);
 
     trailHistory.push_back(body.getPosition());
 
-    if (trailHistory.size() > TRAIL_LENGTH) {
+    if (trailHistory.size() > trailLength) {
         trailHistory.erase(trailHistory.begin()); // Remove the oldest point
     }
-
-    v += a;
-    body.move(v);
 }
 
 void Planet::draw(sf::RenderWindow& target, sf::Shader& shader) const{
@@ -41,7 +47,8 @@ void Planet::draw(sf::RenderWindow& target, sf::Shader& shader) const{
     sf::Vector2f worldPos = body.getPosition();
 
     // Create the glow effect
-    sf::CircleShape glow(radius * 3.0f);
+    float brightness = 5;
+    sf::CircleShape glow(radius * brightness);
     glow.setOrigin({glow.getRadius(), glow.getRadius()});
     glow.setPosition(worldPos);
 
@@ -55,7 +62,7 @@ void Planet::draw(sf::RenderWindow& target, sf::Shader& shader) const{
 
     // Set the shader uniforms
     shader.setUniform("u_center", sf::Glsl::Vec2(screenPos));
-    shader.setUniform("u_radius", radius * 3.0f);
+    shader.setUniform("u_radius", radius * brightness);
     shader.setUniform("u_color", sf::Glsl::Vec4(colour));
 
     // Draw the glow effect with the shader
@@ -69,9 +76,6 @@ void Planet::draw(sf::RenderWindow& target, sf::Shader& shader) const{
         dot.setFillColor(sf::Color(trailCol.r, trailCol.g, trailCol.b, static_cast<uint8_t>(alpha * 255)));
         target.draw(dot);
     }
-
-
-
 
     target.draw(glow, states);
 

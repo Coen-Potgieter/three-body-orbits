@@ -20,13 +20,14 @@ public:
     sf::Color colour;
     std::vector<sf::Vector2f> trailHistory;
     sf::Color trailCol;
+    size_t trailLength;
 
-    Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpMass, float inpRadius, sf::Color inpCol, sf::Color inpTrailCol);
+    Planet(sf::Vector2f initialVelocity, sf::Vector2f initialPos, float inpMass, float inpRadius, sf::Color inpCol, sf::Color inpTrailCol, size_t inpTrailLength);
     ~Planet() = default;
 
 
 
-    void move();
+    void move(sf::Vector2f correction);
     void draw(sf::RenderWindow& target, sf::Shader& shader) const;
 
     // This is a comparison operator to tell `std::find` how to compare other planets (position and mass together)

@@ -18,9 +18,11 @@ int main()
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
 
-    /* std::unordered_map<std::string, std::any> inpMap = sunEarthMoon(); */
-    std::unordered_map<std::string, std::any> inpMap = lagrangeOrbit();
-    /* std::unordered_map<std::string, std::any> inpMap = test(); */
+    /* std::unordered_map<std::string, std::any> inpMap = lagrangeOrbit(); */
+    std::unordered_map<std::string, std::any> inpMap = eulerOrbit();
+    /* std::unordered_map<std::string, std::any> inpMap = figure8Orbit(); */
+    /* std::unordered_map<std::string, std::any> inpMap = BroukeA3(); */
+    /* std::unordered_map<std::string, std::any> inpMap = BroukeA7(); */
 
     SolarSystem solarSystem = SolarSystem(
         std::any_cast<std::vector<sf::Vector2f>&>(inpMap["vel"]), 
@@ -29,6 +31,7 @@ int main()
         std::any_cast<std::vector<float>&>(inpMap["radii"]),
         std::any_cast<std::vector<sf::Color>&>(inpMap["cols"]),
         std::any_cast<std::vector<sf::Color>&>(inpMap["trailCols"]),
+        std::any_cast<size_t&>(inpMap["trailLength"]),
         std::any_cast<float&>(inpMap["g"])
     );
 
@@ -36,8 +39,9 @@ int main()
     int numStars = 20;
     float radius = 1.5;
     sf::Color col = STAR_COLOUR;
-
     Background bg(20, radius, col);
+
+    sf::Clock clock;
 
     while (window.isOpen())
     {
@@ -48,6 +52,21 @@ int main()
                 window.close();
             }
         }
+
+        static float accumulator = 0.0f;
+        float frameTime = clock.restart().asSeconds();
+        // Limit frame time to prevent spiral of death
+        if (frameTime > 0.25f)
+            frameTime = 0.25f;
+
+        accumulator += frameTime;
+
+        // Update physics with fixed time step
+        while (accumulator >= dt) {
+            solarSystem.update(); // A new method just for physics
+            accumulator -= dt;
+        }
+
 
 
 
