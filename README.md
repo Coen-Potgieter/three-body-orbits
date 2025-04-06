@@ -6,8 +6,8 @@
 
 
 <p style="display: flex; align-items:center">
-    <img src="Assets/demo/lagrange-orbit.gif" width="400" alt="Demo">
-    <img src="Assets/demo/euler-orbit.gif" width="400" alt="Demo">
+    <img src="assets/demo/lagrange-orbit.gif" width="400" alt="Demo">
+    <img src="assets/demo/euler-orbit.gif" width="400" alt="Demo">
 </p>
 
 ## How It Works ⚙️
