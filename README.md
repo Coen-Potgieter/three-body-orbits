@@ -1,12 +1,12 @@
 
 
-# 2D Gravity Simulator 🪽
+# 2D Gravity Simulator 🪐
 
 ## Overview 📌
 
 This 2D Gravity Simulator is an interactive application that visualizes the complex dynamics of three-body gravitational systems. Leveraging the SFML library, this simulator offers real-time rendering of planetary motions, allowing users to observe and analyze various orbital patterns and behavior.
 
-## Features
+## Features 🚀
 
 - **Real-Time Simulation:** Observe the intricate movements and interactions of three celestial bodies influenced by gravitational forces.
 - **Multiple Orbit Configurations:** Explore a variety of predefined orbital setups, including:
@@ -100,17 +100,6 @@ This 2D Gravity Simulator is an interactive application that visualizes the comp
         ```bash
         ./bin/main
         ```
-
-
-## Usage 🔧
-
-- Initial conditions for each orbit are setup as helper functions defined in `three-body-orbits/src/core/initialconditions.cpp` which each return unordered maps.
-- These functions are called by the main function in `main.cpp` which use these maps to run the simulation.
-- TL;DR is this: You can create new initial conditions in `three-body-orbits/src/core/initialconditions.cpp` by creating a new function or change alter existing ones.
-- You must just be sure that your newly created function populates a map according to the already existing functions.
-- If you would like to change the orbit then uncomment it in the `main.cpp` file.
-Sure! Here's a clearer and more readable version of your **Usage** section:
-
 
 ## 🔧 Usage
 
